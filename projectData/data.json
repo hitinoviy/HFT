@@ -1,0 +1,157 @@
+{
+  "market": [
+    {
+      "name": "FAST",
+      "subName": "Получение котировок",
+      "installationCost": 2200,
+      "monthlyCost": 2200,
+      "hasAdditionalProperties": false
+    },
+    {
+      "name": "SIMBA ASTS",
+      "subName": "Получение котировок",
+      "installationCost": 2200,
+      "monthlyCost": 2200,
+      "hasAdditionalProperties": false
+    },
+    {
+      "name": "FIX",
+      "subName": "Подача приказов",
+      "installationCost": 2200,
+      "monthlyCost": 2200,
+      "hasAdditionalProperties": false
+    },
+    {
+      "name": "TEAP",
+      "subName": "Подача приказов и получение котировок",
+      "installationCost": 1100,
+      "hasAdditionalProperties": true,
+      "subServices": [
+        {
+          "id": "item0",
+          "name": "Торговый",
+          "monthlyCost": 550
+        },
+        {
+          "id": "item1",
+          "name": "Просмотровый",
+          "monthlyCost": 550
+        }
+      ]
+    }
+  ],
+  "equipment": {
+    "serverPlacement": {
+      "MOEXColocationZone": {
+        "id": "MOEXColocationZone",
+        "name": "Зона колокации MOEX",
+        "installationCost": 28320,
+        "info": {
+          "name": "Юниты",
+          "rangeInfo": {
+            "size": {
+              "min": 1,
+              "max": 5,
+              "step": 1
+            },
+            "monthlyCost": 28320
+          }
+        }
+      },
+      "FreeZone": {
+        "id": "FreeZone",
+        "name": "Свободная зона",
+        "installationCost": 7080,
+        "info": {
+          "name": "Юниты",
+          "rangeInfo": {
+            "size": {
+              "min": 1,
+              "max": 5,
+              "step": 1
+            },
+            "monthlyCost": 4720
+          }
+        }
+      }
+    },
+    "virtualMachine": {
+      "MOEXColocationZone": {
+        "id": "MOEXColocationZoneVirtual",
+        "name": "Виртуальная машина",
+        "subName": "В зоне колокации MOEX",
+        "operatingSystems": [
+          {
+            "name": "Windows",
+            "versions": [
+              {
+                "version": "Windows Server 2019",
+                "monthlyPrice": 6990
+              },
+              {
+                "version": "Windows Server 2022",
+                "monthlyPrice": 7990
+              }
+            ]
+          },
+          {
+            "name": "Linux",
+            "versions": [
+              {
+                "version": "Ubuntu 20.04",
+                "monthlyPrice": 6990
+              },
+              {
+                "version": "CentOS 7",
+                "monthlyPrice": 7990
+              },
+              {
+                "version": "Debian 10",
+                "monthlyPrice": 8990
+              }
+            ]
+          }
+        ],
+        "cpu": {
+          "id": "cpu",
+          "name": "Процессор",
+          "rangeInfo": {
+            "nameCurrentValue": "ядро",
+            "size": {
+              "min": 1,
+              "max": 8,
+              "step": 1
+            },
+            "monthlyPrice": 1500
+          }
+        },
+        "ram": {
+          "id": "ram",
+          "name": "Оперативная память",
+          "rangeInfo": {
+            "nameCurrentValue": "GB",
+            "size": {
+              "min": 1,
+              "max": 12,
+              "step": 1
+            },
+            "monthlyPrice": 1500
+          }
+        },
+        "storage": {
+          "id": "storage",
+          "name": "Жесткий диск (SSD)",
+          "rangeInfo": {
+            "nameCurrentValue": "GB",
+            "size": {
+              "min": 60,
+              "max": 600,
+              "step": 60
+            },
+            "monthlyPrice": 1500
+          }
+        }
+      }
+    }
+  }
+}

@@ -96,12 +96,12 @@
 							{
 								"version": "Windows Server 2019",
 								"monthlyPrice": 6990,
-								"installationCost": 6990
+								"installationCost": 0
 							},
 							{
 								"version": "Windows Server 2022",
 								"monthlyPrice": 7990,
-								"installationCost": 7990
+								"installationCost": 0
 							}
 						]
 					},
@@ -111,17 +111,17 @@
 							{
 								"version": "Ubuntu 20.04",
 								"monthlyPrice": 6990,
-								"installationCost": 6990
+								"installationCost": 0
 							},
 							{
 								"version": "CentOS 7",
 								"monthlyPrice": 7990,
-								"installationCost": 7990
+								"installationCost": 0
 							},
 							{
 								"version": "Debian 10",
 								"monthlyPrice": 8990,
-								"installationCost": 8990
+								"installationCost": 0
 							}
 						]
 					}
@@ -137,7 +137,7 @@
 							"step": 1
 						},
 						"monthlyPrice": 1500,
-						"installationCost": 1500
+						"installationCost": 0
 					}
 				},
 				"ram": {
@@ -151,7 +151,7 @@
 							"step": 1
 						},
 						"monthlyPrice": 1500,
-						"installationCost": 1500
+						"installationCost": 0
 					}
 				},
 				"storage": {
@@ -165,7 +165,7 @@
 							"step": 60
 						},
 						"monthlyPrice": 1500,
-						"installationCost": 1500
+						"installationCost": 0
 					}
 				}
 			}

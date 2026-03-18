@@ -47,9 +47,11 @@ const createRange = data => {
 	rangeInput.min = data.rangeInfo.size.min
 	rangeInput.max = data.rangeInfo.size.max
 	rangeInput.value = data.rangeInfo.size.min
-	rangeInput.step = data.rangeInfo.size.step
-	rangeInput.dataset.monthlyCost = data.rangeInfo.monthlyPrice
-	rangeInput.dataset.installationCost = data.rangeInfo.installationCost
+
+	const price = data.rangeInfo.monthlyPrice || data.rangeInfo.monthlyCost || 0
+	rangeInput.dataset.monthlyCost = price
+	rangeInput.dataset.monthlyPrice = price
+	rangeInput.dataset.installationCost = data.rangeInfo.installationCost || 0
 	rangeInput.dataset.lastPrice = 0
 
 	rangeInput.addEventListener('input', e => {
@@ -216,22 +218,24 @@ const renderVirtual = (data, container) => {
 
 	item.addEventListener('checkboxChange', e => {
 		const isChecked = e.detail.isChecked
-
 		const currentSliders = item.querySelectorAll('.equipment__range-slider')
+		const currentSelect = item.querySelector('.equipment__select')
+
+		// Считаем компоненты (CPU, RAM, SSD)
 		currentSliders.forEach(slider => {
 			const mPrice = Number(slider.dataset.lastPrice) || 0
-			if (isChecked) {
+			if (isChecked && mPrice > 0) {
 				increasePerMonthTotalCost(mPrice)
-			} else {
+			} else if (!isChecked && mPrice > 0) {
 				decreasePerMonthTotalCost(mPrice)
 			}
 		})
 
-		const currentSelect = item.querySelector('.equipment__select')
+		// Считаем ОС
 		const osMPrice = Number(currentSelect.dataset.lastPrice) || 0
-		if (isChecked) {
+		if (isChecked && osMPrice > 0) {
 			increasePerMonthTotalCost(osMPrice)
-		} else {
+		} else if (!isChecked && osMPrice > 0) {
 			decreasePerMonthTotalCost(osMPrice)
 		}
 	})

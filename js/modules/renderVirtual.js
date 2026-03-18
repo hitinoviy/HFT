@@ -1,191 +1,251 @@
-import createElement from '../utils/createElement.js';
-import createCheckbox from '../utils/createCheckbox.js';
-import { increasePerMonthTotalCost, decreasePerMonthTotalCost } from '../modules/renderCart.js';
+import {
+	decreasePerMonthTotalCost,
+	increasePerMonthTotalCost,
+} from '../modules/renderCart.js'
+import createCheckbox from '../utils/createCheckbox.js'
+import createElement from '../utils/createElement.js'
 
-const changePriceMonth = (rangeBlock) => {
-  const rangeContainer = rangeBlock.closest('.equipment__info');
-  const rangeInput = rangeBlock.querySelector('.equipment__range-slider');
-  const price = rangeContainer.querySelector('.equipment__price');
-  let totalPrice;
-  if (rangeBlock.id === 'storage') {
-    totalPrice = (rangeInput.value * rangeInput.dataset.monthlyCost) / 60;
-  } else {
-    totalPrice = rangeInput.value * rangeInput.dataset.monthlyCost;
-  }
+// Хелпер для синхронизации цены отдельного узла с корзиной
+const updateComponentPrice = (element, newPrice, isChecked) => {
+	const lastPrice = Number(element.dataset.lastPrice) || 0
+	if (isChecked) {
+		// Если услуга выбрана, вычитаем старую цену компонента и прибавляем новую
+		decreasePerMonthTotalCost(lastPrice)
+		increasePerMonthTotalCost(newPrice)
+	}
+	element.dataset.lastPrice = newPrice
+}
 
-  rangeContainer.dataset.monthlyCost = totalPrice;
-  const modifiedPrice = totalPrice.toLocaleString('ru-RU');
-  price.textContent = `+${modifiedPrice} ₽ / мес.`;
-};
+const changePriceMonth = rangeBlock => {
+	const rangeContainer = rangeBlock.closest('.equipment__info')
+	const rangeInput = rangeBlock.querySelector('.equipment__range-slider')
+	const priceDisplay = rangeContainer.querySelector('.equipment__price')
+	const item = rangeBlock.closest('.equipment__item')
+	const checkbox = item.querySelector('input[type="checkbox"]')
 
-const createRange = (data) => {
-  const range = createElement('div', 'equipment__range');
-  range.id = data.id;
-  const rangeTitle = createElement('p', 'equipment__range-title', data.name);
-  const rangeTotal = createElement(
-    'p',
-    'equipment__range-total',
-    `${data.rangeInfo.size.min} ${data.rangeInfo.nameCurrentValue}`
-  );
-  const rangeInput = createElement('input', 'equipment__range-slider');
+	let totalPrice =
+		Number(rangeInput.value) * Number(rangeInput.dataset.monthlyCost)
 
-  rangeInput.type = 'range';
-  rangeInput.min = data.rangeInfo.size.min;
-  rangeInput.max = data.rangeInfo.size.max;
-  rangeInput.value = data.rangeInfo.size.min;
-  //oldRangeValue = rangeInput.value;
-  rangeInput.step = data.rangeInfo.size.step;
-  rangeInput.name = data.name;
-  rangeInput.dataset.monthlyCost = data.rangeInfo.monthlyPrice;
-  rangeInput.addEventListener('change', (e) => {
-    const value = rangeInput.value;
-    rangeTotal.textContent = `${value} ${data.rangeInfo.nameCurrentValue}`;
-    changePriceMonth(range);
-    //updateTotalPriceMonth(range);
-  });
+	// Логика для диска: цена в JSON указана за шаг в 60ГБ
+	if (rangeBlock.id === 'storage') {
+		totalPrice = totalPrice / 60
+	}
 
-  const rangeLabels = createElement('div', 'equipment__range-labels');
+	priceDisplay.textContent = `+${totalPrice.toLocaleString('ru-RU')} ₽ / мес.`
+	updateComponentPrice(rangeInput, totalPrice, checkbox.checked)
+}
 
-  for (
-    let i = data.rangeInfo.size.min;
-    i <= data.rangeInfo.size.max;
-    i += data.rangeInfo.size.step
-  ) {
-    const label = createElement('span', null, i);
-    rangeLabels.appendChild(label);
-  }
+const createRange = data => {
+	const range = createElement('div', 'equipment__range')
+	range.id = data.id
+	const rangeTitle = createElement('p', 'equipment__range-title', data.name)
+	const rangeTotal = createElement(
+		'p',
+		'equipment__range-total',
+		`${data.rangeInfo.size.min} ${data.rangeInfo.nameCurrentValue}`,
+	)
+	const rangeInput = createElement('input', 'equipment__range-slider')
 
-  range.append(rangeTitle, rangeTotal, rangeInput, rangeLabels);
+	rangeInput.type = 'range'
+	rangeInput.min = data.rangeInfo.size.min
+	rangeInput.max = data.rangeInfo.size.max
+	rangeInput.value = data.rangeInfo.size.min
+	rangeInput.step = data.rangeInfo.size.step
+	rangeInput.dataset.monthlyCost = data.rangeInfo.monthlyPrice
+	rangeInput.dataset.installationCost = data.rangeInfo.installationCost // ДОБАВИТЬ
+	rangeInput.dataset.lastPrice = 0
 
-  return range;
-};
+	rangeInput.addEventListener('input', e => {
+		rangeTotal.textContent = `${e.target.value} ${data.rangeInfo.nameCurrentValue}`
+		changePriceMonth(range)
+	})
 
-const updateVirtualCardPrice = (data, select) => {
-  const itemPrice = select.closest('.equipment__sub-info').querySelector('.equipment__price');
-  let modifiedPrice = data.toLocaleString('ru-RU');
-  itemPrice.textContent = `${modifiedPrice} ₽ / мес.`;
-};
+	const rangeLabels = createElement('div', 'equipment__range-labels')
+	for (
+		let i = data.rangeInfo.size.min;
+		i <= data.rangeInfo.size.max;
+		i += data.rangeInfo.size.step
+	) {
+		rangeLabels.append(createElement('span', null, i))
+	}
 
-const virtualCardPrice = (data) => {
-  let modifiedPrice = data.toLocaleString('ru-RU');
-  const itemPrice = createElement('p', 'equipment__price', `${modifiedPrice} ₽ / мес.`);
+	range.append(rangeTitle, rangeTotal, rangeInput, rangeLabels)
+	return range
+}
 
-  return itemPrice;
-};
+const createSelect = osData => {
+	const select = createElement('select', 'equipment__select')
 
-const updateSelect = (data) => {
-  const select = document.querySelector('.equipment__select');
-  select.innerHTML = '';
-  data.versions.forEach((el) => {
-    const option = createElement('option', 'equipment__option', el.version);
-    option.dataset.price = el.monthlyPrice;
-    select.appendChild(option);
-  });
-};
+	const fillOptions = data => {
+		select.innerHTML = ''
+		data.versions.forEach(v => {
+			const option = createElement('option', 'equipment__option', v.version)
+			option.value = v.monthlyPrice
+			select.append(option)
+		})
+	}
 
-const createSelect = (data) => {
-  const select = createElement('select', 'equipment__select');
-  data.versions.forEach((el) => {
-    const option = createElement('option', 'equipment__option', el.version);
-    option.dataset.price = el.monthlyPrice;
-    select.appendChild(option);
-  });
-  select.addEventListener('change', (e) => {
-    const selectedOption = e.target.options[e.target.selectedIndex];
-    const selectedPrice = selectedOption.dataset.price;
-    updateVirtualCardPrice(selectedPrice, select);
-  });
-  return select;
-};
+	fillOptions(osData)
+	select.dataset.lastPrice = 0
 
-const createInput = (type, value, checked, data) => {
-  const cardInput = createElement('input');
-  cardInput.type = type;
-  cardInput.name = 'os';
-  cardInput.checked = checked;
-  cardInput.value = value;
-  cardInput.id = value;
-  cardInput.addEventListener('click', (e) => {
-    if (e.target.value === 'Windows') {
-      updateSelect(data[0]);
-      const equipmentSelect = document.querySelector('.equipment__select');
-      updateVirtualCardPrice(data[0].versions[0].monthlyPrice, equipmentSelect);
-    } else {
-      updateSelect(data[1]);
-      const equipmentSelect = document.querySelector('.equipment__select');
-      updateVirtualCardPrice(data[1].versions[0].monthlyPrice, equipmentSelect);
-    }
-  });
-  return cardInput;
-};
+	select.addEventListener('change', e => {
+		const item = select.closest('.equipment__item')
+		const checkbox = item.querySelector('input[type="checkbox"]')
+		const priceDisplay = select
+			.closest('.equipment__sub-info')
+			.querySelector('.equipment__price')
+		const newPrice = Number(e.target.value)
 
-const createLabel = (id) => {
-  const cardLabel = createElement('label', null, id);
-  cardLabel.htmlFor = id;
-  return cardLabel;
-};
+		priceDisplay.textContent = `${newPrice.toLocaleString('ru-RU')} ₽ / мес.`
+		updateComponentPrice(select, newPrice, checkbox.checked)
+	})
 
-const createToggler = (data) => {
-  const cardToggle = createElement('div', 'equipment__toggle');
-  const cardInput1 = createInput('radio', data[0].name, true, data);
-  const cardInput2 = createInput('radio', data[1].name, false, data);
+	return select
+}
 
-  const cardSwitcher = createElement('div', 'equipment__switcher');
-  const label1 = createLabel(data[0].name);
-  const label2 = createLabel(data[1].name);
-  cardSwitcher.append(label1, label2);
+const createToggler = (data, selectComponent) => {
+	const cardToggle = createElement('div', 'equipment__toggle')
+	const cardSwitcher = createElement('div', 'equipment__switcher')
 
-  cardToggle.append(cardInput1, cardInput2, cardSwitcher);
+	data.forEach((os, index) => {
+		const radio = createElement('input')
+		radio.type = 'radio'
+		radio.name = 'os_virtual'
+		radio.id = os.name
+		radio.value = index
+		radio.checked = index === 0
 
-  return cardToggle;
-};
+		radio.addEventListener('change', () => {
+			const selectedOS = data[radio.value]
+			selectComponent.innerHTML = ''
+			selectedOS.versions.forEach(v => {
+				const option = createElement('option', 'equipment__option', v.version)
+				option.value = v.monthlyPrice
+				selectComponent.append(option)
+			})
+			selectComponent.dispatchEvent(new Event('change'))
+		})
 
-const createRangeContainer = (data) => {
-  const equipmentRangeContainer = createElement('div', 'equipment__info');
-  const cpuRange = createRange(data);
-  let modifiedPrice = data.rangeInfo.monthlyPrice.toLocaleString('ru-RU');
-  const equipmentRangePrice = createElement('p', 'equipment__price', `+${modifiedPrice} ₽ / мес.`);
-  equipmentRangeContainer.append(cpuRange, equipmentRangePrice);
+		const label = createElement('label', null, os.name)
+		label.htmlFor = os.name
 
-  return equipmentRangeContainer;
-};
+		cardToggle.append(radio)
+		cardSwitcher.append(label)
+	})
 
-const createVirtualCard = (data) => {
-  const card = createElement('div', 'equipment__content');
-  const cardInfo = createElement('div', 'equipment__sub-info');
-  const cardChoice = createElement('div', 'equipment__choice');
-  const cartToggle = createToggler(data.operatingSystems);
-  const cardSelect = createSelect(data.operatingSystems[0]);
-  cardChoice.append(cartToggle, cardSelect);
-  const cardPrice = virtualCardPrice(data.operatingSystems[0].versions[0].monthlyPrice);
-  cardInfo.append(cardChoice, cardPrice);
+	cardToggle.append(cardSwitcher)
+	return cardToggle
+}
 
-  const cpuRange = createRangeContainer(data.cpu);
-  const ramRange = createRangeContainer(data.ram);
-  const storageRange = createRangeContainer(data.storage);
+const createRangeContainer = data => {
+	const container = createElement('div', 'equipment__info')
+	const range = createRange(data)
+	const price = createElement('p', 'equipment__price', `+0 ₽ / мес.`)
+	container.append(range, price)
+	return container
+}
 
-  card.append(cardInfo, cpuRange, ramRange, storageRange);
-  return card;
-};
+const createVirtualItem = data => {
+	const item = createElement('div', 'equipment__item')
+	// Теперь здесь будет 0 из вашего нового data.json
+	item.dataset.monthlyCost = data.monthlyCost
+	item.dataset.installationCost = data.installationCost
 
-const createVirtualItem = (data) => {
-  const equipmentItem = createElement('div', 'equipment__item');
-  const equipmentInfo = createElement('div', 'equipment__info');
-  const equipmentCheckbox = createCheckbox(data.id);
-  const equipmentName = createElement('div', 'equipment__name');
-  const equipmentTitle = createElement('h3', 'equipment__title', data.name);
-  const equipmentSubTitle = createElement('h4', 'equipment__sub-title', data.subName);
-  equipmentName.append(equipmentTitle, equipmentSubTitle);
-  equipmentInfo.append(equipmentCheckbox, equipmentName);
-  equipmentItem.append(equipmentInfo);
+	const info = createElement('div', 'equipment__info')
+	const checkbox = createCheckbox(data.name)
 
-  return equipmentItem;
-};
+	const nameBlock = createElement('div', 'equipment__name')
+	nameBlock.append(
+		createElement('h3', 'equipment__title', data.name),
+		createElement('h4', 'equipment__sub-title', data.subName),
+	)
+
+	info.append(checkbox, nameBlock)
+	item.append(info)
+	return item
+}
 
 const renderVirtual = (data, container) => {
-  const virtualItem = createVirtualItem(data);
-  const card = createVirtualCard(data);
-  container.append(virtualItem, card);
-};
+	container.innerHTML = ''
+	const item = createVirtualItem(data) // Создает шапку
+	const content = createElement('div', 'equipment__content')
 
-export default renderVirtual;
+	// Собираем контент
+	const cardInfo = createElement('div', 'equipment__sub-info')
+	const cardChoice = createElement('div', 'equipment__choice')
+	const cardSelect = createSelect(data.operatingSystems[0])
+	const cardToggle = createToggler(data.operatingSystems, cardSelect)
+
+	cardChoice.append(cardToggle, cardSelect)
+	cardInfo.append(
+		cardChoice,
+		createElement('p', 'equipment__price', `0 ₽ / мес.`),
+	)
+
+	content.append(
+		cardInfo,
+		createRangeContainer(data.cpu),
+		createRangeContainer(data.ram),
+		createRangeContainer(data.storage),
+	)
+
+	// ВАЖНО: Сначала соединяем всё в один узел
+	item.append(content)
+	container.append(item)
+
+	// Теперь ищем элементы внутри уже собранного item
+	const sliders = item.querySelectorAll('.equipment__range-slider')
+	const select = item.querySelector('.equipment__select')
+
+	// Инициализация цен (только сохранение в память, без отправки в корзину)
+	if (sliders) {
+		sliders.forEach(input => {
+			const rangeBlock = input.closest('.equipment__range')
+			let startPrice = Number(input.value) * Number(input.dataset.monthlyCost)
+			if (rangeBlock && rangeBlock.id === 'storage') startPrice /= 60
+
+			input.dataset.lastPrice = startPrice
+			const priceLabel = rangeBlock
+				?.closest('.equipment__info')
+				?.querySelector('.equipment__price')
+			if (priceLabel)
+				priceLabel.textContent = `+${startPrice.toLocaleString('ru-RU')} ₽ / мес.`
+		})
+	}
+
+	if (select) {
+		const osPrice = Number(select.value)
+		select.dataset.lastPrice = osPrice
+		const osPriceLabel = select
+			.closest('.equipment__sub-info')
+			?.querySelector('.equipment__price')
+		if (osPriceLabel)
+			osPriceLabel.textContent = `${osPrice.toLocaleString('ru-RU')} ₽ / мес.`
+	}
+
+	// ОДИН обработчик для виртуалки
+	item.addEventListener('checkboxChange', e => {
+		const isChecked = e.detail.isChecked
+
+		// 1. Считаем ползунки (только месяц)
+		const currentSliders = item.querySelectorAll('.equipment__range-slider')
+		currentSliders.forEach(slider => {
+			const mPrice = Number(slider.dataset.lastPrice) || 0
+			if (isChecked) {
+				increasePerMonthTotalCost(mPrice)
+			} else {
+				decreasePerMonthTotalCost(mPrice)
+			}
+		})
+
+		// 2. Считаем ОС (только месяц)
+		const currentSelect = item.querySelector('.equipment__select')
+		const osMPrice = Number(currentSelect.dataset.lastPrice) || 0
+		if (isChecked) {
+			increasePerMonthTotalCost(osMPrice)
+		} else {
+			decreasePerMonthTotalCost(osMPrice)
+		}
+	})
+}
+export default renderVirtual

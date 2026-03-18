@@ -1,118 +1,120 @@
-import createElement from '../utils/createElement.js';
-import createCheckbox from '../utils/createCheckbox.js';
-import { increasePerMonthTotalCost, decreasePerMonthTotalCost } from '../modules/renderCart.js';
+import {
+	decreasePerMonthTotalCost,
+	increasePerMonthTotalCost,
+} from '../modules/renderCart.js'
+import createCheckbox from '../utils/createCheckbox.js'
+import createElement from '../utils/createElement.js'
 
-let oldPrice;
-let totalPrice;
-let oldRangeValue;
+const updateCartPrice = (input, isChecked) => {
+	const currentPrice = Number(input.value) * Number(input.dataset.pricePerUnit)
+	const previousPrice = Number(input.dataset.lastPrice) || 0
 
-const updateTotalPriceMonth = (rangeBlock) => {
-  const rangeContainer = rangeBlock.closest('.equipment__item');
-  const itemCheckbox = rangeContainer.querySelector('.item__checkbox input');
-  const rangeInput = rangeBlock.querySelector('.equipment__range-slider');
+	if (isChecked) {
+		decreasePerMonthTotalCost(previousPrice)
+		increasePerMonthTotalCost(currentPrice)
+	}
 
-  if (itemCheckbox.checked) {
-    if (oldRangeValue < rangeInput.value) {
-      if (!oldPrice) {
-        increasePerMonthTotalCost(totalPrice);
+	input.dataset.lastPrice = currentPrice
+}
 
-        decreasePerMonthTotalCost(rangeInput.dataset.monthlyCost);
-      } else {
-        increasePerMonthTotalCost(totalPrice);
-        decreasePerMonthTotalCost(oldPrice);
-      }
-    } else {
-      decreasePerMonthTotalCost(oldPrice);
-      increasePerMonthTotalCost(totalPrice);
-    }
-  }
-  oldPrice = totalPrice;
-  oldRangeValue = rangeInput.value;
-};
+const createRange = (data, parentCheckboxId) => {
+	const range = createElement('div', 'equipment__range')
+	const rangeTitle = createElement('p', 'equipment__range-title', data.name)
+	const rangeTotal = createElement(
+		'p',
+		'equipment__range-total',
+		data.rangeInfo.size.min,
+	)
+	const rangeInput = createElement('input', 'equipment__range-slider')
 
-const changePriceMonth = (rangeBlock) => {
-  const rangeContainer = rangeBlock.closest('.equipment__item');
-  const rangeInput = rangeBlock.querySelector('.equipment__range-slider');
-  const price = rangeContainer.querySelectorAll('.equipment__price');
+	rangeInput.type = 'range'
+	rangeInput.min = data.rangeInfo.size.min
+	rangeInput.max = data.rangeInfo.size.max
+	rangeInput.value = data.rangeInfo.size.min
+	rangeInput.step = data.rangeInfo.size.step
 
-  totalPrice = rangeInput.value * rangeInput.dataset.monthlyCost;
+	rangeInput.dataset.pricePerUnit = data.rangeInfo.monthlyCost
+	rangeInput.dataset.lastPrice =
+		data.rangeInfo.size.min * data.rangeInfo.monthlyCost
 
-  rangeContainer.dataset.monthlyCost = totalPrice;
-  const modifiedPrice = totalPrice.toLocaleString('ru-RU');
-  price[1].textContent = `+${modifiedPrice} ₽ / мес.`;
-};
+	rangeInput.addEventListener('input', e => {
+		const value = e.target.value
+		rangeTotal.textContent = value
 
-const createRange = (data) => {
-  const range = createElement('div', 'equipment__range');
-  const rangeTitle = createElement('p', 'equipment__range-title', data.name);
-  const rangeTotal = createElement('p', 'equipment__range-total', data.rangeInfo.size.min);
-  const rangeInput = createElement('input', 'equipment__range-slider');
-  rangeInput.type = 'range';
-  rangeInput.min = data.rangeInfo.size.min;
-  rangeInput.max = data.rangeInfo.size.max;
-  rangeInput.value = data.rangeInfo.size.min;
-  oldRangeValue = rangeInput.value;
-  rangeInput.step = data.rangeInfo.size.step;
-  rangeInput.name = data.name;
-  rangeInput.dataset.monthlyCost = data.rangeInfo.monthlyCost;
-  rangeInput.addEventListener('change', (e) => {
-    const value = rangeInput.value;
-    rangeTotal.textContent = value;
-    changePriceMonth(range);
-    updateTotalPriceMonth(range);
-  });
+		const card = range.closest('.equipment__item')
+		const checkbox = card.querySelector('input[type="checkbox"]')
 
-  const rangeLabels = createElement('div', 'equipment__range-labels');
+		const priceDisplay = card.querySelectorAll('.equipment__price')[1]
+		const newPrice = value * data.rangeInfo.monthlyCost
+		priceDisplay.textContent = `+${newPrice.toLocaleString('ru-RU')} ₽ / мес.`
 
-  for (
-    let i = data.rangeInfo.size.min;
-    i <= data.rangeInfo.size.max;
-    i += data.rangeInfo.size.step
-  ) {
-    const label = createElement('span', null, i);
-    rangeLabels.appendChild(label);
-  }
+		updateCartPrice(rangeInput, checkbox.checked)
+	})
 
-  range.append(rangeTitle, rangeTotal, rangeInput, rangeLabels);
+	const rangeLabels = createElement('div', 'equipment__range-labels')
+	for (
+		let i = data.rangeInfo.size.min;
+		i <= data.rangeInfo.size.max;
+		i += data.rangeInfo.size.step
+	) {
+		const label = createElement('span', null, i)
+		rangeLabels.appendChild(label)
+	}
 
-  return range;
-};
+	range.append(rangeTitle, rangeTotal, rangeInput, rangeLabels)
+	rangeInput.dataset.monthlyCost = data.rangeInfo.monthlyCost
+	rangeInput.dataset.lastPrice = 0
+	return range
+}
 
-const createEquipment = (data) => {
-  const equipmentDiv = createElement('div', 'equipment__item');
-  equipmentDiv.dataset.installationCost = data.installationCost;
-  const equipmentInfo = createElement('div', 'equipment__info');
-  const equipmentCheckbox = createCheckbox(data.id);
-  const equipmentSubInfo = createElement('div', 'equipment__sub-info');
-  const equipmentInfoTitle = createElement('h3', 'equipment__info-title', data.name);
-  let modifiedPrice = data.installationCost.toLocaleString('ru-RU');
-  const equipmentPriceInstal = createElement(
-    'p',
-    'equipment__price',
-    `+${modifiedPrice} ₽ за монтаж`
-  );
-  equipmentSubInfo.append(equipmentInfoTitle, equipmentPriceInstal);
-  equipmentInfo.append(equipmentCheckbox, equipmentSubInfo);
+const createEquipment = data => {
+	const equipmentDiv = createElement('div', 'equipment__item')
+	equipmentDiv.dataset.installationCost = data.installationCost
 
-  const equipmentRangeContainer = createElement('div', 'equipment__info');
-  const equipmentRange = createRange(data.info);
+	const equipmentInfo = createElement('div', 'equipment__info')
+	const equipmentCheckbox = createCheckbox(data.id)
 
-  modifiedPrice = data.info.rangeInfo.monthlyCost.toLocaleString('ru-RU');
-  const equipmentRangePrice = createElement('p', 'equipment__price', `+${modifiedPrice} ₽ / мес.`);
+	equipmentDiv.dataset.monthlyCost =
+		data.info.rangeInfo.size.min * data.info.rangeInfo.monthlyCost
 
-  equipmentRangeContainer.append(equipmentRange, equipmentRangePrice);
+	const equipmentSubInfo = createElement('div', 'equipment__sub-info')
+	const equipmentInfoTitle = createElement(
+		'h3',
+		'equipment__info-title',
+		data.name,
+	)
+	const equipmentPriceInstal = createElement(
+		'p',
+		'equipment__price',
+		`+${data.installationCost.toLocaleString('ru-RU')} ₽ за монтаж`,
+	)
 
-  equipmentDiv.append(equipmentInfo, equipmentRangeContainer);
-  changePriceMonth(equipmentRange);
+	equipmentSubInfo.append(equipmentInfoTitle, equipmentPriceInstal)
+	equipmentInfo.append(equipmentCheckbox, equipmentSubInfo)
 
-  return equipmentDiv;
-};
+	const equipmentRangeContainer = createElement('div', 'equipment__info')
+	const equipmentRange = createRange(data.info, data.id)
+	const initialMonthlyPrice = Number(
+		equipmentDiv.dataset.monthlyCost,
+	).toLocaleString('ru-RU')
+	const equipmentRangePrice = createElement(
+		'p',
+		'equipment__price',
+		`+${initialMonthlyPrice} ₽ / мес.`,
+	)
+
+	equipmentRangeContainer.append(equipmentRange, equipmentRangePrice)
+	equipmentDiv.append(equipmentInfo, equipmentRangeContainer)
+
+	return equipmentDiv
+}
 
 const renderEquipments = (data, container) => {
-  const equipment = createEquipment(data.serverPlacement.MOEXColocationZone);
-  container.appendChild(equipment);
-  const equipment2 = createEquipment(data.serverPlacement.FreeZone);
-  container.appendChild(equipment2);
-};
+	container.innerHTML = ''
+	const equipment1 = createEquipment(data.serverPlacement.MOEXColocationZone)
+	container.appendChild(equipment1)
+	const equipment2 = createEquipment(data.serverPlacement.FreeZone)
+	container.appendChild(equipment2)
+}
 
-export default renderEquipments;
+export default renderEquipments

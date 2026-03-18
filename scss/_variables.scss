@@ -1,0 +1,37 @@
+$middle-grey: #8e9498;
+$dark: #0a141b;
+$dark-grey: #5a6165;
+$grey: #cccccc;
+$green: #26c77a;
+$dark-green: #1e945b;
+$white: #fbfbfb;
+$main-bg: #f1f1f1;
+$black: #000000;
+
+$font-main: 'Onest', sans-serif;
+$radius: 12px;
+$transition: 0.25s ease;
+
+@mixin mq($width) {
+	@media screen and (max-width: $width) {
+		@content;
+	}
+}
+
+@mixin font-style($size: 15px, $weight: 400, $lh: 133%) {
+	font-family: $font-main;
+	font-size: $size;
+	font-weight: $weight;
+	line-height: $lh;
+}
+@mixin accordion-arrow-part($rotate-angle) {
+	content: '';
+	position: absolute;
+	top: 50%;
+	width: 14px;
+	height: 2px;
+	border-radius: 10px;
+	background: $dark;
+	transition: transform 0.3s ease;
+	transform: translateY(-50%) rotate($rotate-angle);
+}

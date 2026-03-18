@@ -1,112 +1,135 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HFT</title>
-    <link rel="stylesheet" href="style/style.css" />
-  </head>
-  <body>
-    <main class="constructor">
-      <div class="container">
-        <div class="constructor__content">
-          <h1 class="constructor__title">Конструктор тарифов HFT</h1>
-          <h2 class="constructor__sub-title">
-            Настройте все необходимые параметры под свой запрос: выбирайте нужные рынки и
-            оборудование, а мы сразу покажем стоимость — все просто и прозрачно.
-          </h2>
-          <form class="form" action="#">
-            <div class="form__left">
-              <fieldset class="form__card market">
-                <h3 class="form__title">Фондовый рынок: шлюзы</h3>
-                <hr class="form__hr" />
-                <div class="form__group"></div>
-              </fieldset>
-              <fieldset class="form__card equipment">
-                <h3 class="form__title">Оборудование</h3>
-                <hr class="form__hr" />
-                <div class="equipment__card">
-                  <h3 class="equipment__title">Размещение вашего сервера</h3>
-                </div>
-                <div class="equipment__card"></div>
-              </fieldset>
-            </div>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>HFT</title>
+		<link rel="stylesheet" href="style/style.css" />
+	</head>
+	<body>
+		<main class="constructor">
+			<div class="container">
+				<div class="constructor__content">
+					<h1 class="constructor__title">Конструктор тарифов HFT</h1>
+					<h2 class="constructor__sub-title">
+						Настройте все необходимые параметры под свой запрос: выбирайте
+						нужные рынки и оборудование, а мы сразу покажем стоимость — все
+						просто и прозрачно.
+					</h2>
+					<form class="form" action="#">
+						<div class="form__left">
+							<fieldset class="form__card market">
+								<legend class="form__title">Фондовый рынок: шлюзы</legend>
+								<hr class="form__hr" />
+								<div class="form__group"></div>
+							</fieldset>
+							<fieldset class="form__card equipment">
+								<legend class="form__title">Оборудование</legend>
+								<hr class="form__hr" />
+								<div class="equipment__card">
+									<h3 class="equipment__title">Размещение вашего сервера</h3>
+								</div>
+								<div class="equipment__card"></div>
+							</fieldset>
+						</div>
 
-            <fieldset class="form__card cart">
-              <h3 class="form__title">Ваша корзина</h3>
-              <div class="accordion">
-                <div class="accordion__header">
-                  <div class="accordion__btn">Разовая оплата</div>
-                  <div class="accordion__total"><span>132 640</span> ₽</div>
-                </div>
-                <div class="accordion__content">
-                  <div class="accordion__card">
-                    <h2 class="accordion__title">Валютный рынок</h2>
-                    <div class="accordion__item">
-                      <h3 class="accordion__item-title">FAST</h3>
-                      <p class="accordion__item-price"><span>2 200</span> ₽ за подключение</p>
-                    </div>
-                    <div class="accordion__item">
-                      <h3 class="accordion__item-title">FIX</h3>
-                      <p class="accordion__item-price"><span>2 200</span> ₽ за подключение</p>
-                    </div>
-                  </div>
-                  <div class="accordion__card">
-                    <h2 class="accordion__title">Срочный рынок</h2>
-                    <div class="accordion__item">
-                      <h3 class="accordion__item-title">PLAZA II</h3>
-                      <p class="accordion__item-price"><span>2 200</span> ₽ за подключение</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <hr class="form__hr" />
-              <div class="accordion">
-                <div class="accordion__header">
-                  <div class="accordion__btn">Ежемесечная оплата</div>
-                  <div class="accordion__total"><span>13 646 </span> ₽</div>
-                </div>
-                <div class="accordion__content">
-                  <div class="accordion__card">
-                    <h2 class="accordion__title">Валютный рынок</h2>
-                    <div class="accordion__item">
-                      <h3 class="accordion__item-title">Получение котировок (FAST)</h3>
-                      <p class="accordion__item-price"><span>2 200</span> ₽ за подключение</p>
-                    </div>
-                    <div class="accordion__item">
-                      <h3 class="accordion__item-title">Получение котировок (FIX)</h3>
-                      <p class="accordion__item-price"><span>2 200</span> ₽ за подключение</p>
-                    </div>
-                  </div>
-                  <div class="accordion__card">
-                    <h2 class="accordion__title">Срочный рынок</h2>
-                    <div class="accordion__item">
-                      <h3 class="accordion__item-title">Основной (PLAZA II)</h3>
-                      <p class="accordion__item-price"><span>+4 400</span> ₽ за подключение</p>
-                    </div>
-                    <div class="accordion__item">
-                      <h3 class="accordion__item-title">Транзакционный (PLAZA II)</h3>
-                      <p class="accordion__item-price"><span>+2 200</span> ₽ за подключение</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+						<fieldset class="form__card cart">
+							<legend class="form__title">Ваша корзина</legend>
+							<div class="accordion">
+								<div class="accordion__header">
+									<div class="accordion__btn">Разовая оплата</div>
+									<div class="accordion__total"><span>132 640</span> ₽</div>
+								</div>
+								<div class="accordion__content">
+									<div class="accordion__card">
+										<h2 class="accordion__title">Валютный рынок</h2>
+										<div class="accordion__item">
+											<h3 class="accordion__item-title">FAST</h3>
+											<p class="accordion__item-price">
+												<span>2 200</span> ₽ за подключение
+											</p>
+										</div>
+										<div class="accordion__item">
+											<h3 class="accordion__item-title">FIX</h3>
+											<p class="accordion__item-price">
+												<span>2 200</span> ₽ за подключение
+											</p>
+										</div>
+									</div>
+									<div class="accordion__card">
+										<h2 class="accordion__title">Срочный рынок</h2>
+										<div class="accordion__item">
+											<h3 class="accordion__item-title">PLAZA II</h3>
+											<p class="accordion__item-price">
+												<span>2 200</span> ₽ за подключение
+											</p>
+										</div>
+									</div>
+								</div>
+							</div>
+							<hr class="form__hr" />
+							<div class="accordion">
+								<div class="accordion__header">
+									<div class="accordion__btn">Ежемесечная оплата</div>
+									<div class="accordion__total"><span>13 646 </span> ₽</div>
+								</div>
+								<div class="accordion__content">
+									<div class="accordion__card">
+										<h2 class="accordion__title">Валютный рынок</h2>
+										<div class="accordion__item">
+											<h3 class="accordion__item-title">
+												Получение котировок (FAST)
+											</h3>
+											<p class="accordion__item-price">
+												<span>2 200</span> ₽ за подключение
+											</p>
+										</div>
+										<div class="accordion__item">
+											<h3 class="accordion__item-title">
+												Получение котировок (FIX)
+											</h3>
+											<p class="accordion__item-price">
+												<span>2 200</span> ₽ за подключение
+											</p>
+										</div>
+									</div>
+									<div class="accordion__card">
+										<h2 class="accordion__title">Срочный рынок</h2>
+										<div class="accordion__item">
+											<h3 class="accordion__item-title">Основной (PLAZA II)</h3>
+											<p class="accordion__item-price">
+												<span>+4 400</span> ₽ за подключение
+											</p>
+										</div>
+										<div class="accordion__item">
+											<h3 class="accordion__item-title">
+												Транзакционный (PLAZA II)
+											</h3>
+											<p class="accordion__item-price">
+												<span>+2 200</span> ₽ за подключение
+											</p>
+										</div>
+									</div>
+								</div>
+							</div>
 
-              <div class="form__card-total">
-                <h2 class="form__card-title">Итого в первый месяц</h2>
-                <p class="form__card-price"><span>147 236</span> ₽</p>
-              </div>
-              <hr class="form__hr" />
-              <div class="form__card-total">
-                <h2 class="form__card-title">Далее ежемесячно</h2>
-                <p class="form__card-price"><span>13 646</span> ₽</p>
-              </div>
-              <button class="form__submit" type="submit">Оформить заявку</button>
-            </fieldset>
-          </form>
-        </div>
-      </div>
-    </main>
-    <script type="module" src="js/main.js"></script>
-  </body>
+							<div class="form__card-total">
+								<p class="form__card-title">Итого в первый месяц</p>
+								<p class="form__card-price"><span>147 236</span> ₽</p>
+							</div>
+							<hr class="form__hr" />
+							<div class="form__card-total">
+								<p class="form__card-title">Далее ежемесячно</p>
+								<p class="form__card-price"><span>13 646</span> ₽</p>
+							</div>
+							<button class="form__submit" type="submit">
+								Оформить заявку
+							</button>
+						</fieldset>
+					</form>
+				</div>
+			</div>
+		</main>
+		<script type="module" src="js/main.js"></script>
+	</body>
 </html>

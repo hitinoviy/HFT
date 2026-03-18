@@ -5,11 +5,9 @@ import {
 import createCheckbox from '../utils/createCheckbox.js'
 import createElement from '../utils/createElement.js'
 
-// Хелпер для синхронизации цены отдельного узла с корзиной
 const updateComponentPrice = (element, newPrice, isChecked) => {
 	const lastPrice = Number(element.dataset.lastPrice) || 0
 	if (isChecked) {
-		// Если услуга выбрана, вычитаем старую цену компонента и прибавляем новую
 		decreasePerMonthTotalCost(lastPrice)
 		increasePerMonthTotalCost(newPrice)
 	}
@@ -26,7 +24,6 @@ const changePriceMonth = rangeBlock => {
 	let totalPrice =
 		Number(rangeInput.value) * Number(rangeInput.dataset.monthlyCost)
 
-	// Логика для диска: цена в JSON указана за шаг в 60ГБ
 	if (rangeBlock.id === 'storage') {
 		totalPrice = totalPrice / 60
 	}
@@ -52,7 +49,7 @@ const createRange = data => {
 	rangeInput.value = data.rangeInfo.size.min
 	rangeInput.step = data.rangeInfo.size.step
 	rangeInput.dataset.monthlyCost = data.rangeInfo.monthlyPrice
-	rangeInput.dataset.installationCost = data.rangeInfo.installationCost // ДОБАВИТЬ
+	rangeInput.dataset.installationCost = data.rangeInfo.installationCost
 	rangeInput.dataset.lastPrice = 0
 
 	rangeInput.addEventListener('input', e => {
@@ -147,7 +144,6 @@ const createRangeContainer = data => {
 
 const createVirtualItem = data => {
 	const item = createElement('div', 'equipment__item')
-	// Теперь здесь будет 0 из вашего нового data.json
 	item.dataset.monthlyCost = data.monthlyCost
 	item.dataset.installationCost = data.installationCost
 
@@ -167,10 +163,9 @@ const createVirtualItem = data => {
 
 const renderVirtual = (data, container) => {
 	container.innerHTML = ''
-	const item = createVirtualItem(data) // Создает шапку
+	const item = createVirtualItem(data)
 	const content = createElement('div', 'equipment__content')
 
-	// Собираем контент
 	const cardInfo = createElement('div', 'equipment__sub-info')
 	const cardChoice = createElement('div', 'equipment__choice')
 	const cardSelect = createSelect(data.operatingSystems[0])
@@ -188,16 +183,12 @@ const renderVirtual = (data, container) => {
 		createRangeContainer(data.ram),
 		createRangeContainer(data.storage),
 	)
-
-	// ВАЖНО: Сначала соединяем всё в один узел
 	item.append(content)
 	container.append(item)
 
-	// Теперь ищем элементы внутри уже собранного item
 	const sliders = item.querySelectorAll('.equipment__range-slider')
 	const select = item.querySelector('.equipment__select')
 
-	// Инициализация цен (только сохранение в память, без отправки в корзину)
 	if (sliders) {
 		sliders.forEach(input => {
 			const rangeBlock = input.closest('.equipment__range')
@@ -223,11 +214,9 @@ const renderVirtual = (data, container) => {
 			osPriceLabel.textContent = `${osPrice.toLocaleString('ru-RU')} ₽ / мес.`
 	}
 
-	// ОДИН обработчик для виртуалки
 	item.addEventListener('checkboxChange', e => {
 		const isChecked = e.detail.isChecked
 
-		// 1. Считаем ползунки (только месяц)
 		const currentSliders = item.querySelectorAll('.equipment__range-slider')
 		currentSliders.forEach(slider => {
 			const mPrice = Number(slider.dataset.lastPrice) || 0
@@ -238,7 +227,6 @@ const renderVirtual = (data, container) => {
 			}
 		})
 
-		// 2. Считаем ОС (только месяц)
 		const currentSelect = item.querySelector('.equipment__select')
 		const osMPrice = Number(currentSelect.dataset.lastPrice) || 0
 		if (isChecked) {

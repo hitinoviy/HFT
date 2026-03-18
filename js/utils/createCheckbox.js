@@ -51,7 +51,7 @@ const createCheckbox = (name, disabled) => {
 	const div = document.createElement('div')
 	div.classList.add('item__checkbox')
 
-	const input = document.createElement('input') // Вот определение input
+	const input = document.createElement('input')
 	input.type = 'checkbox'
 	input.id = id
 	input.name = id
@@ -64,7 +64,6 @@ const createCheckbox = (name, disabled) => {
 
 		if (!item) return
 
-		// Если у элемента НЕТ внутренних ползунков — считаем его здесь (простые услуги)
 		const sliders = item.querySelectorAll('.equipment__range-slider')
 		if (sliders.length === 0) {
 			const instCost = Number(item.dataset.installationCost) || 0
@@ -79,7 +78,6 @@ const createCheckbox = (name, disabled) => {
 			}
 		}
 
-		// Всегда уведомляем внешние скрипты (для виртуалки)
 		item.dispatchEvent(
 			new CustomEvent('checkboxChange', { detail: { isChecked } }),
 		)
@@ -94,5 +92,4 @@ const createCheckbox = (name, disabled) => {
 	return div
 }
 
-// ОБЯЗАТЕЛЬНО В КОНЦЕ
 export default createCheckbox

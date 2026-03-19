@@ -221,7 +221,6 @@ const renderVirtual = (data, container) => {
 		const currentSliders = item.querySelectorAll('.equipment__range-slider')
 		const currentSelect = item.querySelector('.equipment__select')
 
-		// Считаем компоненты (CPU, RAM, SSD)
 		currentSliders.forEach(slider => {
 			const mPrice = Number(slider.dataset.lastPrice) || 0
 			if (isChecked && mPrice > 0) {
@@ -231,7 +230,6 @@ const renderVirtual = (data, container) => {
 			}
 		})
 
-		// Считаем ОС
 		const osMPrice = Number(currentSelect.dataset.lastPrice) || 0
 		if (isChecked && osMPrice > 0) {
 			increasePerMonthTotalCost(osMPrice)

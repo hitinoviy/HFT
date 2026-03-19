@@ -20,7 +20,11 @@ const updateCartPrice = (input, isChecked) => {
 const createRange = data => {
 	const range = createElement('div', 'equipment__range')
 	const rangeTitle = createElement('p', 'equipment__range-title', data.name)
-	const rangeTotal = createElement('p', 'equipment__range-total', data.rangeInfo.size.min)
+	const rangeTotal = createElement(
+		'p',
+		'equipment__range-total',
+		data.rangeInfo.size.min,
+	)
 	const rangeInput = createElement('input', 'equipment__range-slider')
 
 	rangeInput.type = 'range'
@@ -29,9 +33,9 @@ const createRange = data => {
 	rangeInput.value = data.rangeInfo.size.min
 	rangeInput.step = data.rangeInfo.size.step
 
-	// СТРОГО ПО ТВОЕЙ DATA.JSON: monthlyCost
 	rangeInput.dataset.monthlyCost = data.rangeInfo.monthlyCost
-	rangeInput.dataset.lastPrice = data.rangeInfo.size.min * data.rangeInfo.monthlyCost
+	rangeInput.dataset.lastPrice =
+		data.rangeInfo.size.min * data.rangeInfo.monthlyCost
 
 	rangeInput.addEventListener('input', e => {
 		const value = e.target.value
@@ -41,13 +45,18 @@ const createRange = data => {
 		const priceDisplay = card.querySelectorAll('.equipment__price')[1]
 
 		const currentPrice = Number(value) * Number(rangeInput.dataset.monthlyCost)
-		if (priceDisplay) priceDisplay.textContent = `+${currentPrice.toLocaleString('ru-RU')} ₽ / мес.`
+		if (priceDisplay)
+			priceDisplay.textContent = `+${currentPrice.toLocaleString('ru-RU')} ₽ / мес.`
 
 		updateCartPrice(rangeInput, checkbox.checked)
 	})
 
 	const rangeLabels = createElement('div', 'equipment__range-labels')
-	for (let i = data.rangeInfo.size.min; i <= data.rangeInfo.size.max; i += data.rangeInfo.size.step) {
+	for (
+		let i = data.rangeInfo.size.min;
+		i <= data.rangeInfo.size.max;
+		i += data.rangeInfo.size.step
+	) {
 		rangeLabels.append(createElement('span', null, i))
 	}
 	range.append(rangeTitle, rangeTotal, rangeInput, rangeLabels)
@@ -59,21 +68,33 @@ const createEquipment = data => {
 	equipmentDiv.dataset.installationCost = data.installationCost
 
 	const equipmentInfo = createElement('div', 'equipment__info')
-	// Передаем data.name, чтобы toCamelCase в чекбоксе сработал
 	const equipmentCheckbox = createCheckbox(data.name)
 
 	const equipmentSubInfo = createElement('div', 'equipment__sub-info')
-	const equipmentInfoTitle = createElement('h3', 'equipment__info-title', data.name)
-	const equipmentPriceInstal = createElement('p', 'equipment__price', `+${data.installationCost.toLocaleString('ru-RU')} ₽ за монтаж`)
+	const equipmentInfoTitle = createElement(
+		'h3',
+		'equipment__info-title',
+		data.name,
+	)
+	const equipmentPriceInstal = createElement(
+		'p',
+		'equipment__price',
+		`+${data.installationCost.toLocaleString('ru-RU')} ₽ за монтаж`,
+	)
 
 	equipmentSubInfo.append(equipmentInfoTitle, equipmentPriceInstal)
 	equipmentInfo.append(equipmentCheckbox, equipmentSubInfo)
 
 	const equipmentRangeContainer = createElement('div', 'equipment__info')
 	const rangeElement = createRange(data.info)
-	
-	const initialPrice = data.info.rangeInfo.size.min * data.info.rangeInfo.monthlyCost
-	const equipmentRangePrice = createElement('p', 'equipment__price', `+${initialPrice.toLocaleString('ru-RU')} ₽ / мес.`)
+
+	const initialPrice =
+		data.info.rangeInfo.size.min * data.info.rangeInfo.monthlyCost
+	const equipmentRangePrice = createElement(
+		'p',
+		'equipment__price',
+		`+${initialPrice.toLocaleString('ru-RU')} ₽ / мес.`,
+	)
 
 	equipmentRangeContainer.append(rangeElement, equipmentRangePrice)
 	equipmentDiv.append(equipmentInfo, equipmentRangeContainer)
@@ -84,7 +105,9 @@ const createEquipment = data => {
 const renderEquipments = (data, container) => {
 	container.innerHTML = ''
 	if (data.serverPlacement) {
-		container.appendChild(createEquipment(data.serverPlacement.MOEXColocationZone))
+		container.appendChild(
+			createEquipment(data.serverPlacement.MOEXColocationZone),
+		)
 		container.appendChild(createEquipment(data.serverPlacement.FreeZone))
 	}
 }

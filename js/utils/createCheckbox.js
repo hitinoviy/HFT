@@ -33,22 +33,28 @@ const createCheckbox = (name, disabled) => {
 			e.target.closest('.equipment__item') || e.target.closest('.item')
 		if (!item) return
 
+		// Если это дочерний чекбокс (Торговый/Просмотровый) — ищем именно его .item, не родительский
+		const isSubItem = !!e.target.closest('.item__sub-item')
+
 		const instCost = Number(item.dataset.installationCost) || 0
 		const monthlyCost = Number(item.dataset.monthlyCost) || 0
 		const sliders = item.querySelectorAll('.equipment__range-slider')
 		const isVirtual = item.querySelector('.equipment__content')
 
+		// 1. Разовая оплата
 		if (isChecked) {
 			if (instCost) increaseOneTimeTotalCost(instCost)
 		} else {
 			if (instCost) decreaseOneTimeTotalCost(instCost)
 		}
 
+		// 2. Ежемесячная оплата для простых айтемов
 		if (monthlyCost && !item.querySelector('.item__sub-item')) {
 			if (isChecked) increasePerMonthTotalCost(monthlyCost)
 			else decreasePerMonthTotalCost(monthlyCost)
 		}
 
+		// 3. Слайдеры
 		if (!isVirtual && sliders.length > 0) {
 			sliders.forEach(slider => {
 				const currentSliderPrice = Number(slider.dataset.lastPrice) || 0
@@ -57,22 +63,25 @@ const createCheckbox = (name, disabled) => {
 			})
 		}
 
-		const subInputs = item.querySelectorAll(
-			'.item__sub-item input[type="checkbox"]',
-		)
-		if (subInputs.length > 0) {
-			subInputs.forEach(subInput => {
-				subInput.disabled = !isChecked
-
-				if (!isChecked && subInput.checked) {
-					subInput.checked = false
-					const subItem = subInput.closest('.item')
-					const subMonthly = Number(subItem?.dataset.monthlyCost) || 0
-					if (subMonthly) decreasePerMonthTotalCost(subMonthly)
-				}
-			})
+		// 4. Управление дочерними чекбоксами — ТОЛЬКО если клик был на родителе
+		if (!isSubItem) {
+			const subInputs = item.querySelectorAll(
+				'.item__sub-item input[type="checkbox"]',
+			)
+			if (subInputs.length > 0) {
+				subInputs.forEach(subInput => {
+					subInput.disabled = !isChecked
+					if (!isChecked && subInput.checked) {
+						subInput.checked = false
+						const subItem = subInput.closest('.item')
+						const subMonthly = Number(subItem?.dataset.monthlyCost) || 0
+						if (subMonthly) decreasePerMonthTotalCost(subMonthly)
+					}
+				})
+			}
 		}
 
+		// 5. Сигнал для виртуальных машин
 		item.dispatchEvent(
 			new CustomEvent('checkboxChange', { detail: { isChecked } }),
 		)
